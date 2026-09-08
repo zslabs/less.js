@@ -6,6 +6,25 @@ import Dimension from './dimension.js';
 import * as Constants from '../constants.js';
 const MATH = Constants.Math;
 
+/**
+ * Keywords (relative-color channels such as `r`/`g`/`b`) and CSS functions
+ * such as var() only resolve in the browser. An operation holding one cannot
+ * be computed here, so eval() leaves it intact.
+ *
+ * Nested operations have to be searched too: a pass-through inner op is
+ * itself uncomputable, same as a Call. #4480 covers Call only; a hex origin
+ * such as `rgb(from #112233 r g b / 0.9)` has no Call at all.
+ *
+ * @param {Node} node
+ * @returns {boolean}
+ */
+function isBrowserOperand(node) {
+    if (node.type === 'Call' || node.type === 'Keyword') {
+        return true;
+    }
+    return node instanceof Operation && node.operands.some(isBrowserOperand);
+}
+
 class Operation extends Node {
     get type() { return 'Operation'; }
 
@@ -46,6 +65,9 @@ class Operation extends Node {
                     (a instanceof Operation || b instanceof Operation)
                     && /** @type {Operation} */ (a).op === '/' && context.math === MATH.PARENS_DIVISION
                 ) {
+                    return new Operation(this.op, [a, b], this.isSpaced);
+                }
+                if (isBrowserOperand(a) || isBrowserOperand(b)) {
                     return new Operation(this.op, [a, b], this.isSpaced);
                 }
                 throw { type: 'Operation',

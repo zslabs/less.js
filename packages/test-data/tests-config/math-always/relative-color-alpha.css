@@ -1,0 +1,21 @@
+.relative-rgb-var-alpha {
+  color: rgb(from var(--dt_color-base-pry) r g b / 0.9);
+}
+.relative-rgb-hex-alpha {
+  color: rgb(from #112233 r g b / 0.9);
+}
+.relative-rgb-no-alpha {
+  color: rgb(from var(--dt_color-base-pry) r g b);
+}
+.relative-hsl-var-alpha {
+  color: hsl(from var(--dt_color-base-pry) h s l / 0.9);
+}
+.relative-oklch-var-alpha {
+  color: oklch(from var(--dt_color-base-pry) l c h / 0.9);
+}
+.relative-rgb-light-dark {
+  color: light-dark(rgb(from var(--dt_color-base-pry) r g b / 0.9), rgb(from var(--dt_color-base-pry) r g b / 0.9));
+}
+.classic-rgb-still-evaluates {
+  color: #112233;
+}

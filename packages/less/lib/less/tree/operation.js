@@ -7,20 +7,33 @@ import * as Constants from '../constants.js';
 const MATH = Constants.Math;
 
 /**
- * Keywords (relative-color channels such as `r`/`g`/`b`) and CSS functions
- * such as var() only resolve in the browser. An operation holding one cannot
- * be computed here, so eval() leaves it intact.
+ * CSS functions such as var() and relative-color channel keywords
+ * (`r`/`g`/`b`, `alpha`, `none`, ...) only resolve in the browser.
+ * An operation holding one cannot be computed here, so eval() leaves
+ * it intact. Ordinary keywords (`auto`, `inherit`) are not colorOperands,
+ * so they never become Operation nodes; they are unchanged.
  *
  * Nested operations have to be searched too: a pass-through inner op is
- * itself uncomputable, same as a Call. #4480 covers Call only; a hex origin
- * such as `rgb(from #112233 r g b / 0.9)` has no Call at all.
+ * itself uncomputable, same as a Call. A hex origin such as
+ * `rgb(from #112233 r g b / 0.9)` has no Call at all.
  *
  * @param {Node} node
  * @returns {boolean}
  */
+const RELATIVE_COLOR_CHANNELS = new Set([
+    'r', 'g', 'b',
+    'h', 's', 'l',
+    'w', 'c',
+    'a', 'x', 'y', 'z',
+    'alpha', 'none'
+]);
+
 function isBrowserOperand(node) {
-    if (node.type === 'Call' || node.type === 'Keyword') {
+    if (node.type === 'Call') {
         return true;
+    }
+    if (node.type === 'Keyword') {
+        return RELATIVE_COLOR_CHANNELS.has(String(node.value).toLowerCase());
     }
     return node instanceof Operation && node.operands.some(isBrowserOperand);
 }

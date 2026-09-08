@@ -44,11 +44,11 @@
   color: rgb(from #112233 r g b / 0.9);
 }
 .color-rgb-from-var-alpha {
-  color: rgb(from var(--dt_color-base-pry) r g b / 0.9);
+  color: rgb(from var(--surface) r g b / 0.9);
 }
 .color-hsl-from-var-alpha {
-  color: hsl(from var(--dt_color-base-pry) h s l / 0.9);
+  color: hsl(from var(--surface) h s l / 0.9);
 }
 .color-oklch-from-var-alpha {
-  color: oklch(from var(--dt_color-base-pry) l c h / 0.9);
+  color: oklch(from var(--surface) l c h / 0.9);
 }
